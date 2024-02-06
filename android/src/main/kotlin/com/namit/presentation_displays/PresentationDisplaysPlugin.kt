@@ -8,6 +8,7 @@ import android.view.Display
 import androidx.annotation.NonNull
 import androidx.core.content.ContextCompat.getSystemService
 import com.google.gson.Gson
+import io.flutter.FlutterInjector
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.embedding.engine.dart.DartExecutor
@@ -116,8 +117,10 @@ class PresentationDisplaysPlugin : FlutterPlugin, ActivityAware, MethodChannel.M
         if (FlutterEngineCache.getInstance().get(tag) == null) {
             val flutterEngine = FlutterEngine(context!!)
             flutterEngine.navigationChannel.setInitialRoute(tag)
+            FlutterInjector.instance().flutterLoader().startInitialization(context!!)
+            val appBundlePath: String = FlutterInjector.instance().flutterLoader().findAppBundlePath()
             flutterEngine.dartExecutor.executeDartEntrypoint(
-                DartExecutor.DartEntrypoint.createDefault()
+                DartExecutor.DartEntrypoint(appBundlePath, "secondaryDisplayMain")
             )
             flutterEngine.lifecycleChannel.appIsResumed()
             // Cache the FlutterEngine to be used by FlutterActivity.
